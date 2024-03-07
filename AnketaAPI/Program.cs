@@ -15,6 +15,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbConext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MSSQLDBConnection")));
 builder.Services.AddScoped<IRepository<User>, UserRepository>();
 builder.Services.AddScoped<IRepository<CatalogSurvey>, CatalogSurveyRepository>();
+builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
+builder.Services.AddScoped<IRepository<CatalogSurveyQuestion>, CatalogSurveyQuestionRepository>();
+builder.Services.AddScoped<IRepository<QuestionAnswer>, QuestionAnswerRepository>();
 
 builder.Services.AddCors(options =>
 {

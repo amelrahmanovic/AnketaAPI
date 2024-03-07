@@ -18,6 +18,21 @@ namespace AnketaAPI.DataAccessObject
             return result == null ? false : true;
         }
 
+        public User Add_Custom(User entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Delete(User entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Delete(int id1, int id2)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<User> GetAll()
         {
             return _context.User.ToList();
@@ -28,6 +43,21 @@ namespace AnketaAPI.DataAccessObject
 #pragma warning disable CS8603 // Possible null reference return.
             return _context.User.SingleOrDefault(x => x.Id == id);
 #pragma warning restore CS8603 // Possible null reference return.
+        }
+
+        public IEnumerable<User> GetById_Custom(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<CatalogSurveyQuestion> GetById_Custom2(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Question> GetById_Custom2(List<int> ids)
+        {
+            throw new NotImplementedException();
         }
     }
 }
