@@ -24,7 +24,11 @@ namespace AnketaAPI
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>().HasKey(x => x.Id);
+            //modelBuilder.Entity<User>().HasKey(x => x.Id);// in this step we have duplicated emails
+            modelBuilder.Entity<User>(entity => {
+                entity.HasKey(x => x.Id);
+                entity.HasIndex(u => u.Email).IsUnique();
+            });
             modelBuilder.Entity<CatalogSurveyQuestion>().HasKey(sc => new { sc.CatalogSurveyId, sc.QuestionId });
             modelBuilder.Entity<UserCatalogSurvery>().HasKey(sc => new { sc.CatalogSurveyId, sc.UserId });
             modelBuilder.Entity<UserAnswer>().HasKey(sc => new { sc.UserId, sc.QuestionAnswerId });

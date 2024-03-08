@@ -1,13 +1,13 @@
 ﻿using AnketaAPI.Models;
 
-namespace AnketaAPI.DataAccessObject
+namespace AnketaAPI.DataAccessObject.DAO
 {
     public class CatalogSurveyDAO
     {
         AppDbConext context;
         public CatalogSurveyDAO(IConfiguration config)
         {
-            context= new AppDbConext(config);
+            context = new AppDbConext(config);
         }
         public bool Add(CatalogSurvey catalogSurvey)
         {

@@ -13,6 +13,9 @@ namespace AnketaAPI.DataAccessObject
 
         public bool Add(User user)
         {
+            var userFind = _context.User.SingleOrDefault(x => x.Email == user.Email);
+            if (userFind == null)
+                return false;
             var result = _context.User.Add(user);
             _context.SaveChanges();
             return result == null ? false : true;
@@ -20,7 +23,13 @@ namespace AnketaAPI.DataAccessObject
 
         public User Add_Custom(User entity)
         {
-            throw new NotImplementedException();
+            var userFind = _context.User.SingleOrDefault(x => x.Email == entity.Email);
+            if (userFind != null)
+                return userFind;
+
+            var result = _context.User.Add(entity);
+            _context.SaveChanges();
+            return entity;
         }
 
         public bool Delete(User entity)

@@ -1,4 +1,4 @@
-﻿namespace AnketaAPI.Models
+﻿namespace AnketaAPI.ViewModels
 {
     public class QuestionAnswerNewVM
     {

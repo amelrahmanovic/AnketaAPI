@@ -7,5 +7,7 @@
 
         public required int CatalogSurveyId { get; set; }
         public CatalogSurvey? CatalogSurvey { get; set; }
+
+        public bool Finished { get; set; }
     }
 }

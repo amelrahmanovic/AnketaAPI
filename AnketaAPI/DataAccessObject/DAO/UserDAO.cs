@@ -1,12 +1,12 @@
 ﻿using AnketaAPI.Models;
 
-namespace AnketaAPI.DataAccessObject
+namespace AnketaAPI.DataAccessObject.DAO
 {
     public class UserDAO
     {
         IConfiguration config;
         AppDbConext context;
-        public UserDAO(IConfiguration config) 
+        public UserDAO(IConfiguration config)
         {
             this.config = config;
             context = new AppDbConext(this.config);

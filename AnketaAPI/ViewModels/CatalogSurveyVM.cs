@@ -8,6 +8,7 @@ namespace AnketaAPI.ViewModels
         public string Name { get; set; }
         public DateTime Created { get; set; }
         public int Questions { get; set; }
+        public int Users { get; set; }
 
         //public IList<CatalogSurveyQuestion> CatalogSurveyQuestion { get; set; }
     }

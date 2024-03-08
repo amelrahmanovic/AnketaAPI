@@ -8,7 +8,9 @@ namespace AnketaAPI.ViewModels
         public MappingProfile()
         {
             CreateMap<CatalogSurvey, CatalogSurveyVM>()
-                .ForMember(dest => dest.Questions, opt => opt.MapFrom(src => src.CatalogSurveyQuestion.Count())); // Mapping from CatalogSurvey to CatalogSurveyVM
+                .ForMember(dest => dest.Questions, opt => opt.MapFrom(src => src.CatalogSurveyQuestion.Count()))
+                .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.UserCatalogSurvery.Count()))
+                ; // Mapping from CatalogSurvey to CatalogSurveyVM
             CreateMap<CatalogSurveyVM, CatalogSurvey>();
 
             CreateMap<CatalogSurveyQuestionVM, CatalogSurveyQuestion>();

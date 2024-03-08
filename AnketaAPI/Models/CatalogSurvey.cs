@@ -10,5 +10,6 @@ namespace AnketaAPI.Models
         public required DateTime Created { get; set; }
 
         public IList<CatalogSurveyQuestion> CatalogSurveyQuestion { get; set; }
+        public IList<UserCatalogSurvery> UserCatalogSurvery { get; set; }
     }
 }

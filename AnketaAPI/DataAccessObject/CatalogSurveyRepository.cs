@@ -38,7 +38,7 @@ namespace AnketaAPI.DataAccessObject
 
         public IEnumerable<CatalogSurvey> GetAll()
         {
-            return _context.CatalogSurvey.Include(x=>x.CatalogSurveyQuestion).AsNoTracking().ToList();
+            return _context.CatalogSurvey.Include(x=>x.CatalogSurveyQuestion).Include(x=>x.UserCatalogSurvery).AsNoTracking().ToList();
         }
 
         public CatalogSurvey GetById(int id)
