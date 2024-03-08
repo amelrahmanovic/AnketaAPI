@@ -1,5 +1,5 @@
-﻿using AnketaAPI.DataAccessObject;
-using AnketaAPI.Models;
+﻿using AnketaAPI.Models;
+using AnketaAPI.Repository;
 using AnketaAPI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 

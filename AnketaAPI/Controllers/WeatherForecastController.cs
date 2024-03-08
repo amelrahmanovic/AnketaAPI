@@ -1,6 +1,6 @@
 using AnketaAPI.DataAccessObject;
-using AnketaAPI.DataAccessObject.DAO;
 using AnketaAPI.Models;
+using AnketaAPI.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AnketaAPI.Controllers

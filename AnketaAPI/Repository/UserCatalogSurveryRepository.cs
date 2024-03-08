@@ -1,6 +1,6 @@
 ﻿using AnketaAPI.Models;
 
-namespace AnketaAPI.DataAccessObject
+namespace AnketaAPI.Repository
 {
     public class UserCatalogSurveryRepository : IRepository<UserCatalogSurvery>
     {
@@ -12,7 +12,7 @@ namespace AnketaAPI.DataAccessObject
         public bool Add(UserCatalogSurvery entity)
         {
             var userCatalogSurveryDB = _context.UserCatalogSurvery.SingleOrDefault(x => x.UserId == entity.UserId && x.CatalogSurveyId == entity.CatalogSurveyId);
-            if(userCatalogSurveryDB!=null)
+            if (userCatalogSurveryDB != null)
                 return true;
 
             var result = _context.UserCatalogSurvery.Add(entity);

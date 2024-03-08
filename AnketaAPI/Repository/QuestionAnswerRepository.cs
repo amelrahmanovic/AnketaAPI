@@ -1,7 +1,7 @@
 ﻿using AnketaAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace AnketaAPI.DataAccessObject
+namespace AnketaAPI.Repository
 {
     public class QuestionAnswerRepository : IRepository<QuestionAnswer>
     {
@@ -10,7 +10,7 @@ namespace AnketaAPI.DataAccessObject
         {
             _context = context;
         }
-        
+
         public bool Add(QuestionAnswer entity)
         {
             var result = _context.QuestionAnswer.Add(entity);
@@ -54,7 +54,7 @@ namespace AnketaAPI.DataAccessObject
 
         public IEnumerable<QuestionAnswer> GetById_Custom(int id)
         {
-            return _context.QuestionAnswer.Where(x=>x.QuestionId==id).ToList();
+            return _context.QuestionAnswer.Where(x => x.QuestionId == id).ToList();
         }
 
         public List<Question> GetById_Custom2(List<int> ids)

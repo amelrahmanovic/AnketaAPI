@@ -1,6 +1,6 @@
 ﻿using AnketaAPI.Models;
 
-namespace AnketaAPI.DataAccessObject.DAO
+namespace AnketaAPI.DataAccessObject
 {
     public class UserDAO
     {

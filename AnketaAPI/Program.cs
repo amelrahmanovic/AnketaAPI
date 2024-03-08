@@ -1,6 +1,6 @@
 using AnketaAPI;
-using AnketaAPI.DataAccessObject;
 using AnketaAPI.Models;
+using AnketaAPI.Repository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -2,14 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
-namespace AnketaAPI.DataAccessObject
+namespace AnketaAPI.Repository
 {
     public class CatalogSurveyQuestionRepository : IRepository<CatalogSurveyQuestion>
     {
         private readonly AppDbConext _context;
         public CatalogSurveyQuestionRepository(AppDbConext context)
         {
-             _context = context;
+            _context = context;
         }
         public bool Add(CatalogSurveyQuestion entity)
         {

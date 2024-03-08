@@ -3,7 +3,7 @@ using AnketaAPI.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
-namespace AnketaAPI.DataAccessObject
+namespace AnketaAPI.Repository
 {
     public class CatalogSurveyRepository : IRepository<CatalogSurvey>
     {
@@ -38,13 +38,13 @@ namespace AnketaAPI.DataAccessObject
 
         public IEnumerable<CatalogSurvey> GetAll()
         {
-            return _context.CatalogSurvey.Include(x=>x.CatalogSurveyQuestion).Include(x=>x.UserCatalogSurvery).AsNoTracking().ToList();
+            return _context.CatalogSurvey.Include(x => x.CatalogSurveyQuestion).Include(x => x.UserCatalogSurvery).AsNoTracking().ToList();
         }
 
         public CatalogSurvey GetById(int id)
         {
 #pragma warning disable CS8603 // Possible null reference return.
-            return _context.CatalogSurvey.AsNoTracking().SingleOrDefault(x=>x.Id==id);
+            return _context.CatalogSurvey.AsNoTracking().SingleOrDefault(x => x.Id == id);
 #pragma warning restore CS8603 // Possible null reference return.
         }
 

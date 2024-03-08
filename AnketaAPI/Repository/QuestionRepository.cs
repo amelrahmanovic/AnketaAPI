@@ -1,6 +1,6 @@
 ﻿using AnketaAPI.Models;
 
-namespace AnketaAPI.DataAccessObject
+namespace AnketaAPI.Repository
 {
     public class QuestionRepository : IRepository<Question>
     {

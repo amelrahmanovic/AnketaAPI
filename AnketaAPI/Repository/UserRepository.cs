@@ -1,7 +1,7 @@
 ﻿using AnketaAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace AnketaAPI.DataAccessObject
+namespace AnketaAPI.Repository
 {
     public class UserRepository : IRepository<User>
     {
