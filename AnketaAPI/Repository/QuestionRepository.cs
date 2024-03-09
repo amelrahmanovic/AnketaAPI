@@ -46,6 +46,11 @@ namespace AnketaAPI.Repository
             throw new NotImplementedException();
         }
 
+        public Question GetById_Custom3(int v1, int v2)
+        {
+            throw new NotImplementedException();
+        }
+
         List<Question> IRepository<Question>.GetById_Custom2(List<int> ids)
         {
             return _context.Question.Where(q => ids.Contains(q.Id)).ToList();

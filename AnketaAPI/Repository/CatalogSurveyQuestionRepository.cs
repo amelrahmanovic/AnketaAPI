@@ -52,10 +52,15 @@ namespace AnketaAPI.Repository
 
         public IEnumerable<CatalogSurveyQuestion> GetById_Custom(int id)
         {
-            return _context.CatalogSurveyQuestion.Where(x => x.CatalogSurveyId == id).ToList();
+            return _context.CatalogSurveyQuestion.Where(x => x.CatalogSurveyId == id).Include(x=>x.Question).ToList();
         }
 
         public List<Question> GetById_Custom2(List<int> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CatalogSurveyQuestion GetById_Custom3(int v1, int v2)
         {
             throw new NotImplementedException();
         }

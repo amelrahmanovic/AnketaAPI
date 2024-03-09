@@ -19,6 +19,7 @@ builder.Services.AddScoped<IRepository<Question>, QuestionRepository>();
 builder.Services.AddScoped<IRepository<CatalogSurveyQuestion>, CatalogSurveyQuestionRepository>();
 builder.Services.AddScoped<IRepository<QuestionAnswer>, QuestionAnswerRepository>();
 builder.Services.AddScoped<IRepository<UserCatalogSurvery>, UserCatalogSurveryRepository>();
+builder.Services.AddScoped<IRepository<UserAnswer>, UserAnswerRepository>();
 
 builder.Services.AddCors(options =>
 {

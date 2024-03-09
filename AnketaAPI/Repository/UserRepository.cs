@@ -68,5 +68,10 @@ namespace AnketaAPI.Repository
         {
             throw new NotImplementedException();
         }
+
+        public User GetById_Custom3(int v1, int v2)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

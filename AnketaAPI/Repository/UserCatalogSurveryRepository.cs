@@ -1,4 +1,5 @@
 ﻿using AnketaAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AnketaAPI.Repository
 {
@@ -32,7 +33,11 @@ namespace AnketaAPI.Repository
 
         public bool Delete(int id1, int id2)
         {
-            throw new NotImplementedException();
+            var userCatalogSurvery = _context.UserCatalogSurvery.SingleOrDefault(x => x.UserId == id1 && x.CatalogSurveyId == id2);
+            if(userCatalogSurvery == null) return false;
+            var result = _context.UserCatalogSurvery.Remove(userCatalogSurvery);
+            _context.SaveChanges();
+            return result == null ? false : true;
         }
 
         public IEnumerable<UserCatalogSurvery> GetAll()
@@ -47,10 +52,15 @@ namespace AnketaAPI.Repository
 
         public IEnumerable<UserCatalogSurvery> GetById_Custom(int id)
         {
-            throw new NotImplementedException();
+            return _context.UserCatalogSurvery.Include(x=>x.User).Where(x => x.CatalogSurveyId == id).ToList();
         }
 
         public List<Question> GetById_Custom2(List<int> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        public UserCatalogSurvery GetById_Custom3(int v1, int v2)
         {
             throw new NotImplementedException();
         }

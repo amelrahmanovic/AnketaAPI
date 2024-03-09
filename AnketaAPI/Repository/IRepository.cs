@@ -13,5 +13,6 @@ namespace AnketaAPI.Repository
         bool Delete(T entity);
         bool Delete(int id1, int id2);
         List<Question> GetById_Custom2(List<int> ids);
+        T GetById_Custom3(int v1, int v2);
     }
 }

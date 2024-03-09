@@ -1,5 +1,6 @@
 ﻿using AnketaAPI.Models;
 using AutoMapper;
+using System.Collections.Generic;
 
 namespace AnketaAPI.ViewModels
 {
@@ -24,6 +25,21 @@ namespace AnketaAPI.ViewModels
 
             CreateMap<QuestionAnswerNewVM, QuestionAnswer>();
             CreateMap<QuestionAnswer, QuestionAnswerNewVM>();
+
+            CreateMap<UserCatalogSurveryVM, UserCatalogSurvery>();
+            CreateMap<UserCatalogSurvery, UserCatalogSurveryVM>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+                ;
+
+            CreateMap<UserQuestionAnswerVM, CatalogSurveyQuestion>()
+                .ForMember(dest => dest.QuestionId, opt => opt.MapFrom(src => src.QuestionId))
+                .ForPath(dest => dest.Question.Name, opt => opt.MapFrom(src => src.QuestionName));
+                //.ForMember(dest => dest.Question.Name, opt => opt.MapFrom(src => src.QuestionName != null ? src.QuestionName : "")); //Don't working if ?Question
+            CreateMap<CatalogSurveyQuestion, UserQuestionAnswerVM>();
+
+            CreateMap<QuestionAnswerUserVM, QuestionAnswer>();
+            CreateMap<QuestionAnswer, QuestionAnswerUserVM>();
         }
     }
 }
