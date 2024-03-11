@@ -22,12 +22,12 @@ namespace AnketaAPI.Controllers
             return _userRepository.GetAll();
         }
 
-        //// GET api/<UserController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+        // GET api/User/example@example.com
+        [HttpGet("{email}")]
+        public ActionResult<User> Get(string email)
+        {
+            return _userRepository.GetAll().SingleOrDefault(x => x.Email == email);
+        }
 
         //// POST api/<UserController>
         //[HttpPost]
