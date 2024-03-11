@@ -40,6 +40,9 @@ namespace AnketaAPI.ViewModels
 
             CreateMap<QuestionAnswerUserVM, QuestionAnswer>();
             CreateMap<QuestionAnswer, QuestionAnswerUserVM>();
+
+            CreateMap<UserVM, User>();
+            CreateMap<User, UserVM>();
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using AnketaAPI.Models;
 using AnketaAPI.Repository;
+using AnketaAPI.ViewModels;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,22 +13,28 @@ namespace AnketaAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IRepository<User> _userRepository;
+        private MapperConfiguration config;
+        private Mapper mapper;
+
         public UserController(IRepository<User> userRepository)
         {
             _userRepository = userRepository;
+
+            config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
+            mapper = new Mapper(config);
         }
         // GET: api/<UserController>
         [HttpGet]
-        public IEnumerable<User> Get()
+        public IEnumerable<UserVM> Get()
         {
-            return _userRepository.GetAll();
+            return mapper.Map<List<UserVM>>(_userRepository.GetAll());
         }
 
         // GET api/User/example@example.com
         [HttpGet("{email}")]
-        public ActionResult<User> Get(string email)
+        public ActionResult<UserVM> Get(string email)
         {
-            return _userRepository.GetAll().SingleOrDefault(x => x.Email == email);
+            return mapper.Map<UserVM>(_userRepository.GetAll().SingleOrDefault(x => x.Email == email));
         }
 
         //// POST api/<UserController>
