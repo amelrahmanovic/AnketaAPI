@@ -152,13 +152,6 @@ namespace AnketaAPI.Controllers
                     _userCatalogSurvery.Delete(new UserCatalogSurvery() { CatalogSurveyId = item.CatalogSurveyId, UserId = (int)item.UserId });
                 }
             }
-            
-            //User user = _userRepository.Add_Custom(new Models.User() { Email = userCatalogSurveryNewVM.Email });
-            //if (user.Id != 0)
-            //{
-            //    bool result = _userCatalogSurvery.Add(new UserCatalogSurvery() { UserId = user.Id, CatalogSurveyId = userCatalogSurveryNewVM.CatalogSurveyId, Finished = false });
-            //    return result ? Ok() : NotFound();
-            //}
             return Ok();
         }
 
