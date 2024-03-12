@@ -21,8 +21,8 @@ namespace AnketaAPI.Controllers
         private Mapper mapper;
 
         public UserCatalogSurveryController(
-            IRepository<UserCatalogSurvery> userCatalogSurvery, 
-            IRepository<User> userRepository, 
+            IRepository<UserCatalogSurvery> userCatalogSurvery,
+            IRepository<User> userRepository,
             IRepository<CatalogSurveyQuestion> catalogSurveyQuestion,
             IRepository<QuestionAnswer> questionAnswer,
             IRepository<UserAnswer> userAnswer
@@ -44,7 +44,7 @@ namespace AnketaAPI.Controllers
         //    return new string[] { "value1", "value2" };
         //}
 
-        // GET api/UserCatalogSurveryController/5
+        // GET api/UserCatalogSurvery/5
         [HttpGet("{id}")]
         public IEnumerable<UserCatalogSurveryVM> Get(int id)
         {
@@ -62,7 +62,7 @@ namespace AnketaAPI.Controllers
             {
                 item.UserQuestionAnswerVM = userQuestionAnswerVM;
             }
-            foreach(var item in catalogSurveyQuestionVMs)
+            foreach (var item in catalogSurveyQuestionVMs)
             {
                 foreach (var userQuestionAnswerVMx in item.UserQuestionAnswerVM)
                 {
@@ -72,9 +72,9 @@ namespace AnketaAPI.Controllers
                         if (userAnswerResult != null)
                         {
                             if (userAnswerResult.Answer)
-                                userAnswer.UserAnswer = "true";
+                                userAnswer.UserAnswer = true;
                             else
-                                userAnswer.UserAnswer = "false";
+                                userAnswer.UserAnswer = false;
 
                             if (userAnswerResult.Answer == userAnswer.IsCorrect)
                                 item.SuccessfulAnswers++;
@@ -83,7 +83,7 @@ namespace AnketaAPI.Controllers
                         }
                         else
                         {
-                            userAnswer.UserAnswer = "";
+                            userAnswer.UserAnswer = false;
                             item.WrongAnswers++;
                         }
                     }
@@ -91,6 +91,34 @@ namespace AnketaAPI.Controllers
             }
 
             return catalogSurveyQuestionVMs;
+        }
+
+        // GET api/UserCatalogSurvery/user/5
+        [HttpGet("user/{userid}")]
+        public IEnumerable<UserTestsVM> Get2(int userid)
+        {
+            IEnumerable<UserCatalogSurvery> result = _userCatalogSurvery.GetById_Custom4(userid);
+            List<UserTestsVM> UserTestsVMs = mapper.Map<List<UserTestsVM>>(result); //CatalogSurvey===>catalogSurveyId, catalogSurveyName, catalogSurveyCreated
+
+            foreach (var item in UserTestsVMs)//questionId, questionName
+            {
+                item.TestDone = "";
+                IEnumerable<CatalogSurveyQuestion> catalogSurveyQuestions = _catalogSurveyQuestion.GetById_Custom(item.CatalogSurveyId);
+                List<UserQuestionAnswerVM> userQuestionAnswerVM = mapper.Map<List<UserQuestionAnswerVM>>(catalogSurveyQuestions);
+
+                foreach (var item2 in userQuestionAnswerVM)
+                {
+                    item2.QuestionAnswerUserVM = mapper.Map<List<QuestionAnswerUserVM>>(_questionAnswer.GetById_Custom(item2.QuestionId));
+                    foreach (var item3 in item2.QuestionAnswerUserVM)
+                    {
+                        item3.UserAnswer = false;
+                    }
+                }
+                item.userQuestionAnswerVMs = userQuestionAnswerVM;
+            }
+
+
+            return UserTestsVMs;
         }
 
         // POST api/<UserCatalogSurveryController>
@@ -106,13 +134,41 @@ namespace AnketaAPI.Controllers
             return NotFound();
         }
 
+        [HttpPost("user")]
+        public IActionResult Post2([FromBody] List<UserTestsVM> UserTestsVMs)
+        {
+            foreach (var item in UserTestsVMs)
+            {
+                if (item.TestDone == "true")
+                {
+                    foreach (var item2 in item.userQuestionAnswerVMs)
+                    {
+                        foreach (var item3 in item2.QuestionAnswerUserVM)
+                        {
+                            _userAnswer.Add(new UserAnswer() { Answer = item3.UserAnswer, QuestionAnswerId = item3.Id, UserId = (int)item.UserId });
+                        }
+                    }
+                    //disable test
+                    _userCatalogSurvery.Delete(new UserCatalogSurvery() { CatalogSurveyId = item.CatalogSurveyId, UserId = (int)item.UserId });
+                }
+            }
+            
+            //User user = _userRepository.Add_Custom(new Models.User() { Email = userCatalogSurveryNewVM.Email });
+            //if (user.Id != 0)
+            //{
+            //    bool result = _userCatalogSurvery.Add(new UserCatalogSurvery() { UserId = user.Id, CatalogSurveyId = userCatalogSurveryNewVM.CatalogSurveyId, Finished = false });
+            //    return result ? Ok() : NotFound();
+            //}
+            return Ok();
+        }
+
         //// PUT api/<UserCatalogSurveryController>/5
         //[HttpPut("{id}")]
         //public void Put(int id, [FromBody] string value)
         //{
         //}
 
-        // DELETE api/UserCatalogSurveryController/5?catalogSurveyId=6
+        // DELETE api/UserCatalogSurvery/5?catalogSurveyId=6
         [HttpDelete("{userId}")]
         public IActionResult Delete(int userId, [FromQuery] int catalogSurveyId)
         {

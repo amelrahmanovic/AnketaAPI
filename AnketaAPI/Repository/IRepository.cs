@@ -6,6 +6,7 @@ namespace AnketaAPI.Repository
     {
         T GetById(int id);
         IEnumerable<T> GetById_Custom(int id);
+        IEnumerable<T> GetById_Custom4(int id);
         IEnumerable<T> GetAll();
         bool Add(T entity);
         T Add_Custom(T entity);

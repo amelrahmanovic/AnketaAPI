@@ -66,5 +66,10 @@ namespace AnketaAPI.Repository
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerable<QuestionAnswer> GetById_Custom4(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AnketaAPI.Models;
 using AutoMapper;
 using System.Collections.Generic;
+using static Azure.Core.HttpHeader;
 
 namespace AnketaAPI.ViewModels
 {
@@ -43,6 +44,12 @@ namespace AnketaAPI.ViewModels
 
             CreateMap<UserVM, User>();
             CreateMap<User, UserVM>();
+
+            CreateMap<UserTestsVM, UserCatalogSurvery>();
+            CreateMap<UserCatalogSurvery, UserTestsVM>()
+                .ForMember(dest => dest.CatalogSurveyId, opt => opt.MapFrom(src => src.CatalogSurveyId))
+                .ForMember(dest => dest.CatalogSurveyName, opt => opt.MapFrom(src => src.CatalogSurvey.Name))
+                .ForMember(dest => dest.CatalogSurveyCreated, opt => opt.MapFrom(src => src.CatalogSurvey.Created));
         }
     }
 }

@@ -12,7 +12,9 @@ namespace AnketaAPI.Repository
 
         public bool Add(UserAnswer entity)
         {
-            throw new NotImplementedException();
+            var result = _context.UserAnswer.Add(entity);
+            _context.SaveChanges();
+            return result == null ? false : true;
         }
 
         public UserAnswer Add_Custom(UserAnswer entity)
@@ -50,6 +52,11 @@ namespace AnketaAPI.Repository
         }
 
         public List<Question> GetById_Custom2(List<int> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<UserAnswer> GetById_Custom4(int id)
         {
             throw new NotImplementedException();
         }

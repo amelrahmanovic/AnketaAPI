@@ -65,6 +65,11 @@ namespace AnketaAPI.Repository
             throw new NotImplementedException();
         }
 
+        public IEnumerable<CatalogSurveyQuestion> GetById_Custom4(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         //        public IEnumerable<CatalogSurveyQuestion> GetById_Custom2(int id)
         //        {
         //#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.

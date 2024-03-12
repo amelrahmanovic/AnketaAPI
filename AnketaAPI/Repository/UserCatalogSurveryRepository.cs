@@ -28,7 +28,14 @@ namespace AnketaAPI.Repository
 
         public bool Delete(UserCatalogSurvery entity)
         {
-            throw new NotImplementedException();
+            var userCatalogSurvery = _context.UserCatalogSurvery.SingleOrDefault(x=>x.UserId==entity.UserId && x.CatalogSurveyId==entity.CatalogSurveyId);
+            if(userCatalogSurvery !=null)
+            {
+                userCatalogSurvery.Finished = true;
+                _context.SaveChanges();
+                return true;
+            }
+            return false;
         }
 
         public bool Delete(int id1, int id2)
@@ -53,6 +60,14 @@ namespace AnketaAPI.Repository
         public IEnumerable<UserCatalogSurvery> GetById_Custom(int id)
         {
             return _context.UserCatalogSurvery.Include(x=>x.User).Where(x => x.CatalogSurveyId == id).ToList();
+        }
+        public IEnumerable<UserCatalogSurvery> GetById_Custom4(int id)
+        {
+            return _context.UserCatalogSurvery
+                .Include(x => x.CatalogSurvey)
+                .Include(y=>y.User)
+                .Include(o=>o.CatalogSurvey.CatalogSurveyQuestion)
+                .Where(z=>z.UserId==id && z.Finished==false).ToList();
         }
 
         public List<Question> GetById_Custom2(List<int> ids)
