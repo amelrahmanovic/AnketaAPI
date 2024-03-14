@@ -72,9 +72,9 @@ namespace AnketaAPI.Controllers
                         if (userAnswerResult != null)
                         {
                             if (userAnswerResult.Answer)
-                                userAnswer.UserAnswer = true;
+                                userAnswer.UserAnswer = "true";
                             else
-                                userAnswer.UserAnswer = false;
+                                userAnswer.UserAnswer = "false";
 
                             if (userAnswerResult.Answer == userAnswer.IsCorrect)
                                 item.SuccessfulAnswers++;
@@ -83,7 +83,7 @@ namespace AnketaAPI.Controllers
                         }
                         else
                         {
-                            userAnswer.UserAnswer = false;
+                            userAnswer.UserAnswer = "None";
                             item.WrongAnswers++;
                         }
                     }
@@ -111,7 +111,7 @@ namespace AnketaAPI.Controllers
                     item2.QuestionAnswerUserVM = mapper.Map<List<QuestionAnswerUserVM>>(_questionAnswer.GetById_Custom(item2.QuestionId));
                     foreach (var item3 in item2.QuestionAnswerUserVM)
                     {
-                        item3.UserAnswer = false;
+                        item3.UserAnswer = "None";
                     }
                 }
                 item.userQuestionAnswerVMs = userQuestionAnswerVM;
@@ -145,7 +145,12 @@ namespace AnketaAPI.Controllers
                     {
                         foreach (var item3 in item2.QuestionAnswerUserVM)
                         {
-                            _userAnswer.Add(new UserAnswer() { Answer = item3.UserAnswer, QuestionAnswerId = item3.Id, UserId = (int)item.UserId });
+                            if(item3.UserAnswer=="true")
+                                _userAnswer.Add(new UserAnswer() { Answer = true, QuestionAnswerId = item3.Id, UserId = (int)item.UserId });
+                            if (item3.UserAnswer=="false")
+                                _userAnswer.Add(new UserAnswer() { Answer = false, QuestionAnswerId = item3.Id, UserId = (int)item.UserId });
+                            //if (item3.UserAnswer=="None")
+                                        
                         }
                     }
                     //disable test

@@ -7,6 +7,6 @@
 
         public bool IsCorrect { get; set; }
 
-        public bool UserAnswer { get; set; }
+        public string UserAnswer { get; set; }
     }
 }
