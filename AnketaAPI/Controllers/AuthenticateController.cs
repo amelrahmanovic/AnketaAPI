@@ -32,6 +32,7 @@ namespace AnketaAPI.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModelVM model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);
+            
             if (user == null)
                 user = await _userManager.FindByEmailAsync(model.Username);
 
@@ -53,10 +54,18 @@ namespace AnketaAPI.Controllers
                 var token = CreateToken(authClaims);
                 var refreshToken = GenerateRefreshToken();
 
-                _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
-
                 user.RefreshToken = refreshToken;
-                user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
+                if(model.RememberMe)
+                {
+                    _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
+                    user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
+                }
+                else
+                {
+                    _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInMonthsRememberMe"], out int refreshTokenValidityInMonths);
+                    user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInMonths);
+                }
+                
 
                 await _userManager.UpdateAsync(user);
 
@@ -133,18 +142,14 @@ namespace AnketaAPI.Controllers
         public async Task<IActionResult> RefreshToken(TokenModelVM tokenModel)
         {
             if (tokenModel is null)
-            {
                 return BadRequest("Invalid client request");
-            }
 
             string? accessToken = tokenModel.AccessToken;
             string? refreshToken = tokenModel.RefreshToken;
 
             var principal = GetPrincipalFromExpiredToken(accessToken);
             if (principal == null)
-            {
                 return BadRequest("Invalid access token or refresh token");
-            }
 
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
@@ -155,9 +160,7 @@ namespace AnketaAPI.Controllers
             var user = await _userManager.FindByNameAsync(username);
 
             if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
-            {
                 return BadRequest("Invalid access token or refresh token");
-            }
 
             var newAccessToken = CreateToken(principal.Claims.ToList());
             var newRefreshToken = GenerateRefreshToken();

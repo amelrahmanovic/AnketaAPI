@@ -9,5 +9,7 @@ namespace AnketaAPI.Models.Identity
 
         [Required(ErrorMessage = "Password is required")]
         public string? Password { get; set; }
+        [Required(ErrorMessage = "Remember me is required")]
+        public bool RememberMe { get; set; }
     }
 }
