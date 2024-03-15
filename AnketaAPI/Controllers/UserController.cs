@@ -23,7 +23,7 @@ namespace AnketaAPI.Controllers
             config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
             mapper = new Mapper(config);
         }
-        // GET: api/<UserController>
+        // GET: api/User
         [HttpGet]
         public IEnumerable<UserVM> Get()
         {
