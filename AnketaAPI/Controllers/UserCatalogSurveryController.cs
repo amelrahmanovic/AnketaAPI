@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AnketaAPI.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserCatalogSurveryController : ControllerBase
@@ -47,6 +46,7 @@ namespace AnketaAPI.Controllers
         //}
 
         // GET api/UserCatalogSurvery/5
+        [Authorize]
         [HttpGet("{id}")]
         public IEnumerable<UserCatalogSurveryVM> Get(int id)
         {
@@ -68,6 +68,7 @@ namespace AnketaAPI.Controllers
             {
                 foreach (var userQuestionAnswerVMx in item.UserQuestionAnswerVM)
                 {
+                    bool WrongAnswerResult = true;
                     foreach (var userAnswer in userQuestionAnswerVMx.QuestionAnswerUserVM)
                     {
                         UserAnswer? userAnswerResult = _userAnswer.GetById_Custom3(item.Id, userAnswer.Id);
@@ -78,17 +79,16 @@ namespace AnketaAPI.Controllers
                             else
                                 userAnswer.UserAnswer = "false";
 
-                            if (userAnswerResult.Answer == userAnswer.IsCorrect)
-                                item.SuccessfulAnswers++;
-                            else
-                                item.WrongAnswers++;
+                            if (userAnswerResult.Answer != userAnswer.IsCorrect)
+                                WrongAnswerResult = false;
                         }
                         else
                         {
-                            userAnswer.UserAnswer = "None";
-                            item.WrongAnswers++;
+                            WrongAnswerResult = false;
                         }
                     }
+                    if (WrongAnswerResult) item.SuccessfulAnswers++;
+                    else item.WrongAnswers++;
                 }
             }
 
@@ -96,6 +96,7 @@ namespace AnketaAPI.Controllers
         }
 
         // GET api/UserCatalogSurvery/user/5
+        [AllowAnonymous]
         [HttpGet("user/{userid}")]
         public IEnumerable<UserTestsVM> Get2(int userid)
         {
@@ -124,6 +125,7 @@ namespace AnketaAPI.Controllers
         }
 
         // POST api/<UserCatalogSurveryController>
+        [Authorize]
         [HttpPost]
         public IActionResult Post(UserCatalogSurveryNewVM userCatalogSurveryNewVM)
         {
@@ -169,6 +171,7 @@ namespace AnketaAPI.Controllers
         //}
 
         // DELETE api/UserCatalogSurvery/5?catalogSurveyId=6
+        [Authorize]
         [HttpDelete("{userId}")]
         public IActionResult Delete(int userId, [FromQuery] int catalogSurveyId)
         {

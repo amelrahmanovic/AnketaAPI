@@ -64,12 +64,28 @@ builder.Services.AddScoped<IRepository<QuestionAnswer>, QuestionAnswerRepository
 builder.Services.AddScoped<IRepository<UserCatalogSurvery>, UserCatalogSurveryRepository>();
 builder.Services.AddScoped<IRepository<UserAnswer>, UserAnswerRepository>();
 
+//Production
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:4200") // Adjust port if needed
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
+//Development
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
-        builder => builder.AllowAnyOrigin()
+        builder =>
+        builder.AllowAnyOrigin()
         .AllowAnyHeader()
-        .AllowAnyMethod());
+        .AllowAnyMethod()
+        );
+    options.AddPolicy("AllowOrigin",
+            builder => builder.WithOrigins("http://localhost:4200"));
 });
 
 var app = builder.Build();
@@ -88,6 +104,8 @@ app.UseAuthorization();
 app.UseHttpsRedirection();
 
 // Enable CORS
+//app.UseCors("AllowAll");
+//app.UseCors("AllowLocalhost");
 app.UseCors("AllowAll");
 
 app.MapControllers();

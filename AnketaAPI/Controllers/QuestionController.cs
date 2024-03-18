@@ -2,6 +2,7 @@
 using AnketaAPI.Repository;
 using AnketaAPI.ViewModels;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
@@ -36,6 +37,7 @@ namespace AnketaAPI.Controllers
         //}
 
         // GET api/Question/5
+        [Authorize]
         [HttpGet("{id}")]
         public List<QuestionVM> Get(int id)
         {
