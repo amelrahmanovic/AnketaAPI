@@ -79,27 +79,57 @@ namespace AnketaAPI.Controllers
             return Unauthorized();
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModelVM model)
         {
-            var userExists = await _userManager.FindByNameAsync(model.Username);
-            var userExist2 = await _userManager.FindByEmailAsync(model.Email);
-            if (userExists != null || userExist2 != null)
-                return StatusCode(StatusCodes.Status500InternalServerError, value: "User already exists!");
-
-            ApplicationUser user = new()
+            if(_userManager.Users.Count()==0)
             {
-                Email = model.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Username
-            };
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
-                return StatusCode(StatusCodes.Status500InternalServerError, value: "User creation failed! Please check user details and try again.");
+                var userExists = await _userManager.FindByNameAsync(model.Username);
+                var userExist2 = await _userManager.FindByEmailAsync(model.Email);
+                if (userExists != null || userExist2 != null)
+                    return StatusCode(StatusCodes.Status500InternalServerError, value: "User already exists!");
 
-            return Created();
+                ApplicationUser user = new()
+                {
+                    Email = model.Email,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    UserName = model.Username
+                };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (!result.Succeeded)
+                    return StatusCode(StatusCodes.Status500InternalServerError, value: "User creation failed! Please check user details and try again.");
+
+                return Created();
+            }
+            else
+            {
+                if (HttpContext.User.Identity.IsAuthenticated)
+                {
+                    var userExists = await _userManager.FindByNameAsync(model.Username);
+                    var userExist2 = await _userManager.FindByEmailAsync(model.Email);
+                    if (userExists != null || userExist2 != null)
+                        return StatusCode(StatusCodes.Status500InternalServerError, value: "User already exists!");
+
+                    ApplicationUser user = new()
+                    {
+                        Email = model.Email,
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        UserName = model.Username
+                    };
+                    var result = await _userManager.CreateAsync(user, model.Password);
+                    if (!result.Succeeded)
+                        return StatusCode(StatusCodes.Status500InternalServerError, value: "User creation failed! Please check user details and try again.");
+
+                    return Created();
+                }
+                else
+                {
+                    return StatusCode(401);
+                }
+                
+            }
         }
 
         [Authorize]
@@ -173,6 +203,16 @@ namespace AnketaAPI.Controllers
                 accessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
                 refreshToken = newRefreshToken
             });
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("EnableNew")]
+        public async Task<IActionResult> EnableNew()
+        {
+            var countUsers = _userManager.Users.Count();
+
+            return countUsers == 0 ? new ObjectResult(new { Enable = true }): new ObjectResult(new { Enable = false });
         }
 
 

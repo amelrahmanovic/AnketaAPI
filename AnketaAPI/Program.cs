@@ -72,7 +72,8 @@ builder.Services.AddCors(options =>
         {
             builder.WithOrigins("http://localhost:4200") // Adjust port if needed
                    .AllowAnyHeader()
-                   .AllowAnyMethod();
+                   .AllowAnyMethod()
+                   .AllowCredentials();
         });
 });
 //Development
@@ -106,7 +107,7 @@ app.UseHttpsRedirection();
 // Enable CORS
 //app.UseCors("AllowAll");
 //app.UseCors("AllowLocalhost");
-app.UseCors("AllowAll");
+app.UseCors("AllowLocalhost");
 
 app.MapControllers();
 
