@@ -63,6 +63,8 @@ namespace AnketaAPI.Controllers
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
 
+                authClaims.Add(new Claim("FullName", user.FirstName + " " + user.LastName));
+
                 var token = CreateToken(authClaims);
                 var refreshToken = GenerateRefreshToken();
 
@@ -91,17 +93,22 @@ namespace AnketaAPI.Controllers
             return Unauthorized();
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("getusers")]
-        public List<ApplicationUserVM> GetUsers()
+        public async Task<List<ApplicationUserVM>> GetUsersAsync()
         {
             List<ApplicationUser> users = _userManager.Users.ToList();
             List<ApplicationUserVM> usersVM = mapper.Map<List<ApplicationUserVM>>(users);
+            for (int i = 0; i < usersVM.Count; i++)
+            {
+                var userRoles = await _userManager.GetRolesAsync(users[i]);
+                usersVM[i].Roles = (List<string>?)userRoles;
+            }
             return usersVM;
         }
 
-        //[Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("deleteuser/{userId}")]
         public async Task<IActionResult> DeleteAsync(string userId)
         {
@@ -132,15 +139,18 @@ namespace AnketaAPI.Controllers
                 {
                     Email = model.Email,
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = model.Username
+                    UserName = model.Username,
+                    FirstName = model.FirstName == null ? "" : model.FirstName,
+                    LastName = model.LastName == null ? "" : model.LastName
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (!result.Succeeded)
                     return StatusCode(StatusCodes.Status500InternalServerError, value: "User creation failed! Please check user details and try again.");
 
-                foreach (var role in model.UserRoles)
-                    if (await _roleManager.RoleExistsAsync(role))
-                        await _userManager.AddToRoleAsync(user, role);
+                if (model.UserRoles != null)
+                    foreach (var role in model.UserRoles)
+                        if (await _roleManager.RoleExistsAsync(role))
+                            await _userManager.AddToRoleAsync(user, role);
 
                 return Created();
             }
@@ -157,15 +167,19 @@ namespace AnketaAPI.Controllers
                     {
                         Email = model.Email,
                         SecurityStamp = Guid.NewGuid().ToString(),
-                        UserName = model.Username
+                        UserName = model.Username,
+                        FirstName = model.FirstName==null? "" : model.FirstName,
+                        LastName = model.LastName==null? "" : model.LastName
                     };
                     var result = await _userManager.CreateAsync(user, model.Password);
                     if (!result.Succeeded)
                         return StatusCode(StatusCodes.Status500InternalServerError, value: "User creation failed! Please check user details and try again.");
 
-                    foreach (var role in model.UserRoles)
-                        if (await _roleManager.RoleExistsAsync(role))
-                            await _userManager.AddToRoleAsync(user, role);
+                    if (model.UserRoles!=null)
+                        foreach (var role in model.UserRoles)
+                            if (await _roleManager.RoleExistsAsync(role))
+                                await _userManager.AddToRoleAsync(user, role);
+
                     return Created();
                 }
                 else
@@ -176,7 +190,7 @@ namespace AnketaAPI.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("addrole")]
         public async Task<IActionResult> AddRole([FromBody] RoleVM role)
@@ -188,8 +202,8 @@ namespace AnketaAPI.Controllers
             }
             return NotFound();
         }
-        
-        [Authorize]
+
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("getroles")]
         public List<RoleVM> GetRoles()
@@ -199,7 +213,7 @@ namespace AnketaAPI.Controllers
             return roleVM;
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         [Route("deleterole")]
         public async Task<IActionResult> DeleteRoleAsync([FromQuery] string role)
@@ -214,7 +228,26 @@ namespace AnketaAPI.Controllers
                 return NotFound();
         }
 
-        [Authorize]
+        //[Authorize(Roles = "Admin")]
+        [HttpDelete]
+        [Route("deleteroleuser")]
+        public async Task<IActionResult> DeleteRoleUserAsync([FromQuery] string userId, [FromQuery] string role)
+        {
+            var roleFind = await _roleManager.FindByNameAsync(role);
+            if (roleFind != null)
+            {
+                var userFind = await _userManager.FindByIdAsync(userId);
+                if (userFind != null)
+                {
+                    var result = await _userManager.RemoveFromRoleAsync(userFind, role);
+                    if (result.Succeeded)
+                        return Ok();
+                }
+            }
+            return NotFound();
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("register-admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModelVM model)
@@ -227,7 +260,9 @@ namespace AnketaAPI.Controllers
             {
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Username
+                UserName = model.Username,
+                FirstName = model.FirstName,
+                LastName = model.LastName
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
@@ -249,6 +284,7 @@ namespace AnketaAPI.Controllers
             return Ok("User created successfully!");
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("refresh-token")]
         public async Task<IActionResult> RefreshToken(TokenModelVM tokenModel)
@@ -298,7 +334,7 @@ namespace AnketaAPI.Controllers
         }
 
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("revoke/{username}")]
         public async Task<IActionResult> Revoke(string username)
@@ -312,7 +348,7 @@ namespace AnketaAPI.Controllers
             return NoContent();
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("revoke-all")]
         public async Task<IActionResult> RevokeAll()

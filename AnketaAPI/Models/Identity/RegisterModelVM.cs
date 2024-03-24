@@ -1,20 +1,19 @@
-﻿using AnketaAPI.ViewModels.IdentitiVM;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AnketaAPI.Models.Identity
 {
     public class RegisterModelVM
     {
-        [Required(ErrorMessage = "User Name is required")]
         public string? Username { get; set; }
 
         [EmailAddress]
-        [Required(ErrorMessage = "Email is required")]
         public string? Email { get; set; }
 
-        [Required(ErrorMessage = "Password is required")]
         public string? Password { get; set; }
 
-        public List<string> UserRoles { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+
+        public List<string>? UserRoles { get; set; }
     }
 }
