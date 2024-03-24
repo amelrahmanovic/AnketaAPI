@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AnketaAPI.ViewModels.IdentitiVM;
+using System.ComponentModel.DataAnnotations;
 
 namespace AnketaAPI.Models.Identity
 {
@@ -13,5 +14,7 @@ namespace AnketaAPI.Models.Identity
 
         [Required(ErrorMessage = "Password is required")]
         public string? Password { get; set; }
+
+        public List<string> UserRoles { get; set; }
     }
 }

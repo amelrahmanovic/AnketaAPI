@@ -1,10 +1,17 @@
-﻿using AnketaAPI.Models.Identity;
+﻿using AnketaAPI.Models;
+using AnketaAPI.Models.Identity;
+using AnketaAPI.ViewModels;
+using AnketaAPI.ViewModels.IdentitiVM;
+using AutoMapper;
 using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -19,12 +26,17 @@ namespace AnketaAPI.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private MapperConfiguration config;
+        private Mapper mapper;
 
         public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+
+            config = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
+            mapper = new Mapper(config);
         }
 
         [HttpPost]
@@ -79,6 +91,31 @@ namespace AnketaAPI.Controllers
             return Unauthorized();
         }
 
+        [Authorize]
+        [HttpGet]
+        [Route("getusers")]
+        public List<ApplicationUserVM> GetUsers()
+        {
+            List<ApplicationUser> users = _userManager.Users.ToList();
+            List<ApplicationUserVM> usersVM = mapper.Map<List<ApplicationUserVM>>(users);
+            return usersVM;
+        }
+
+        //[Authorize]
+        [HttpDelete("deleteuser/{userId}")]
+        public async Task<IActionResult> DeleteAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var result = await _userManager.DeleteAsync(user);
+                if (result.Succeeded)
+                    return Ok(result);
+                return BadRequest(result);
+            }
+            return NotFound();
+        }
+
         //[Authorize]
         [HttpPost]
         [Route("register")]
@@ -101,6 +138,10 @@ namespace AnketaAPI.Controllers
                 if (!result.Succeeded)
                     return StatusCode(StatusCodes.Status500InternalServerError, value: "User creation failed! Please check user details and try again.");
 
+                foreach (var role in model.UserRoles)
+                    if (await _roleManager.RoleExistsAsync(role))
+                        await _userManager.AddToRoleAsync(user, role);
+
                 return Created();
             }
             else
@@ -122,6 +163,9 @@ namespace AnketaAPI.Controllers
                     if (!result.Succeeded)
                         return StatusCode(StatusCodes.Status500InternalServerError, value: "User creation failed! Please check user details and try again.");
 
+                    foreach (var role in model.UserRoles)
+                        if (await _roleManager.RoleExistsAsync(role))
+                            await _userManager.AddToRoleAsync(user, role);
                     return Created();
                 }
                 else
@@ -130,6 +174,44 @@ namespace AnketaAPI.Controllers
                 }
                 
             }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("addrole")]
+        public async Task<IActionResult> AddRole([FromBody] RoleVM role)
+        {
+            if (!await _roleManager.RoleExistsAsync(role.name))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(role.name));
+                return Created();
+            }
+            return NotFound();
+        }
+        
+        [Authorize]
+        [HttpGet]
+        [Route("getroles")]
+        public List<RoleVM> GetRoles()
+        {
+            List<IdentityRole> roles = _roleManager.Roles.AsNoTracking().ToList();
+            List<RoleVM> roleVM = mapper.Map<List<RoleVM>>(roles);
+            return roleVM;
+        }
+
+        [Authorize]
+        [HttpDelete]
+        [Route("deleterole")]
+        public async Task<IActionResult> DeleteRoleAsync([FromQuery] string role)
+        {
+            var roleFind = await _roleManager.FindByNameAsync(role);
+            if (roleFind != null)
+            {
+                var x = await _roleManager.DeleteAsync(roleFind);
+                return Ok();
+            }
+            else
+                return NotFound();
         }
 
         [Authorize]

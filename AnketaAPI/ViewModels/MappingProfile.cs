@@ -1,5 +1,8 @@
 ﻿using AnketaAPI.Models;
+using AnketaAPI.Models.Identity;
+using AnketaAPI.ViewModels.IdentitiVM;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using static Azure.Core.HttpHeader;
 
@@ -50,6 +53,13 @@ namespace AnketaAPI.ViewModels
                 .ForMember(dest => dest.CatalogSurveyId, opt => opt.MapFrom(src => src.CatalogSurveyId))
                 .ForMember(dest => dest.CatalogSurveyName, opt => opt.MapFrom(src => src.CatalogSurvey.Name))
                 .ForMember(dest => dest.CatalogSurveyCreated, opt => opt.MapFrom(src => src.CatalogSurvey.Created));
+
+            //Identity
+            CreateMap<RoleVM, IdentityRole>();
+            CreateMap<IdentityRole, RoleVM>();
+
+            CreateMap<ApplicationUserVM, ApplicationUser>();
+            CreateMap<ApplicationUser, ApplicationUserVM>();
         }
     }
 }
