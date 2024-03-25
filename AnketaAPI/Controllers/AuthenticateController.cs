@@ -103,8 +103,20 @@ namespace AnketaAPI.Controllers
             for (int i = 0; i < usersVM.Count; i++)
             {
                 var userRoles = await _userManager.GetRolesAsync(users[i]);
-                usersVM[i].Roles = (List<string>?)userRoles;
+                usersVM[i].UserRoles = (List<string>?)userRoles;
             }
+            return usersVM;
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        [Route("getUserByUserId")]
+        public async Task<ApplicationUserVM> GetUserByUserIdAsync([FromQuery] string userId)
+        {
+            ApplicationUser? user = await _userManager.FindByIdAsync(userId);
+            ApplicationUserVM usersVM = mapper.Map<ApplicationUserVM>(user);
+            if (user!=null)
+                usersVM.UserRoles = (List<string>?)await _userManager.GetRolesAsync(user);
             return usersVM;
         }
 
@@ -158,29 +170,70 @@ namespace AnketaAPI.Controllers
             {
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    var userExists = await _userManager.FindByNameAsync(model.Username);
-                    var userExist2 = await _userManager.FindByEmailAsync(model.Email);
-                    if (userExists != null || userExist2 != null)
-                        return StatusCode(StatusCodes.Status500InternalServerError, value: "User already exists!");
-
-                    ApplicationUser user = new()
+                    if (model.Id == null)//Insert user and role
                     {
-                        Email = model.Email,
-                        SecurityStamp = Guid.NewGuid().ToString(),
-                        UserName = model.Username,
-                        FirstName = model.FirstName==null? "" : model.FirstName,
-                        LastName = model.LastName==null? "" : model.LastName
-                    };
-                    var result = await _userManager.CreateAsync(user, model.Password);
-                    if (!result.Succeeded)
-                        return StatusCode(StatusCodes.Status500InternalServerError, value: "User creation failed! Please check user details and try again.");
+                        var userExists = await _userManager.FindByNameAsync(model.Username);
+                        var userExist2 = await _userManager.FindByEmailAsync(model.Email);
+                        if (userExists != null || userExist2 != null)
+                            return StatusCode(StatusCodes.Status500InternalServerError, value: "User already exists!");
 
-                    if (model.UserRoles!=null)
-                        foreach (var role in model.UserRoles)
-                            if (await _roleManager.RoleExistsAsync(role))
-                                await _userManager.AddToRoleAsync(user, role);
+                        ApplicationUser user = new()
+                        {
+                            Email = model.Email,
+                            SecurityStamp = Guid.NewGuid().ToString(),
+                            UserName = model.Username,
+                            FirstName = model.FirstName == null ? "" : model.FirstName,
+                            LastName = model.LastName == null ? "" : model.LastName
+                        };
+                        var result = await _userManager.CreateAsync(user, model.Password);
+                        if (!result.Succeeded)
+                            return StatusCode(StatusCodes.Status500InternalServerError, value: "User creation failed! Please check user details and try again.");
 
-                    return Created();
+                        if (model.UserRoles != null)
+                            foreach (var role in model.UserRoles)
+                                if (await _roleManager.RoleExistsAsync(role))
+                                    await _userManager.AddToRoleAsync(user, role);
+
+                        return Created();
+                    }
+                    else//edit role not insert user
+                    {
+                        var userFromDb = await _userManager.FindByIdAsync(model.Id);
+                        if (userFromDb != null)
+                        {
+                            //after create update user???
+                            //userFromDb.FirstName = model.FirstName==null? "":model.FirstName;
+                            //userFromDb.LastName = model.LastName == null ? "" : model.LastName;
+                            if (model.UserRoles == null)
+                            {
+                                var rolesFromDb = await _userManager.GetRolesAsync(userFromDb);
+                                foreach (var role in rolesFromDb)
+                                {
+                                    var result = await _userManager.RemoveFromRoleAsync(userFromDb, role);
+                                }
+                            }
+                            else
+                            {
+                                var rolesFromDb = await _userManager.GetRolesAsync(userFromDb);
+                                foreach (var roleFromRequest in model.UserRoles)//Add new role
+                                {
+                                    if (rolesFromDb.SingleOrDefault(x => x == roleFromRequest) == null)
+                                    {
+                                        var result = await _userManager.AddToRoleAsync(userFromDb, roleFromRequest);
+                                    }
+                                }
+                                foreach (var roleDb in rolesFromDb)
+                                {
+                                    if (model.UserRoles.SingleOrDefault(x => x == roleDb) == null)
+                                    {
+                                        var result = await _userManager.RemoveFromRoleAsync(userFromDb, roleDb);
+                                    }
+                                }
+                            }
+                        }
+                        return Created();
+                    }
+                    
                 }
                 else
                 {

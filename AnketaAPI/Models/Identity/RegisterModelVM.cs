@@ -4,6 +4,8 @@ namespace AnketaAPI.Models.Identity
 {
     public class RegisterModelVM
     {
+        public string? Id { get; set; }
+
         public string? Username { get; set; }
 
         [EmailAddress]
